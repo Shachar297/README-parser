@@ -17,6 +17,8 @@ require("dotenv").config()
 
 const httpServer = https.createServer(httpsOptions, server);
 
+server.use("/.well-known", express.static(path.join(__dirname, '.well-known')));
+
 server.use(cors({ origin: '*' }));
 server.use(express.json());
 server.use('', routersManager);
