@@ -11,6 +11,11 @@ paths:
       operationId: parse
       summary: parse readme file via url from github repository.
       parameters:
+      - in: path
+        name: url
+        schema:
+            type: string
+        required: false
       requestBody:
         required: true
         content:
