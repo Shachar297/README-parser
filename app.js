@@ -8,6 +8,7 @@ const
     loggerService = require("./src/readmeParser"),
     fs = require('fs'),
     https = require('https'),
+    path = require('path'),
     httpsOptions = {
         key: fs.readFileSync('./crt/server.key'),
         cert: fs.readFileSync('./crt/server.cert')
