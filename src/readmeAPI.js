@@ -1,6 +1,6 @@
 const
     executors = require("./executors"),
-    fs = require("fs");
+    fileModule = require("./files");
 
 function parse(req, res, next) {
     let 
@@ -15,12 +15,7 @@ function parse(req, res, next) {
         console.log(command)
 
         executors.executeCommandSync(command).then(readme => {
-            fs.readFile(`${timestamp}.md`, "utf8", (e, data) => {
-                if(e) {
-                    throw(e);
-                }
-                res.send(data)
-            })
+            fileModule.readFile(`.`, `${timestamp}.md`)
         }).catch(e => {
             console.log(e)
         });
