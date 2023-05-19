@@ -1,29 +1,40 @@
-import express, {Express, Request, Response} from 'express';
-const
-    cors = require('cors'),
-    server : Express = express(),
-    port = process.env.PORT || 8888,
-    routersManager = require('./routes/routes-manager'),
-    fs = require('fs'),
-    https = require('https'),
-    path = require('path'),
-    httpsOptions = {
-        key: fs.readFileSync('./crt/server.key'),
-        cert: fs.readFileSync('./crt/server.cert')
-    };
+import express, { Application } from "express";
+import https from "https";
+import path from "path";
+import fs from "fs";
+import cors from "cors";
+import RouterManager from "./routes/routes-manager";
 
-require("dotenv").config()
+const port = process.env.PORT || 8888,
+  httpsOptions = {
+    key: fs.readFileSync("./crt/server.key"),
+    cert: fs.readFileSync("./crt/server.cert"),
+  };
 
-const httpServer = https.createServer(httpsOptions, server);
+require("dotenv").config();
 
-server.use("/.well-known", express.static(path.join(__dirname, '.well-known')));
+class App {
+  public server: Application;
+  public port: number;
+  public httpsServer;
+  constructor(controller: any, port: number, routerManager: RouterManager) {
+    this.server = express();
+    this.port = port;
+    this.httpsServer = https.createServer(httpsOptions, this.server);
 
-server.use(cors({ origin: '*' }));
-server.use(express.json());
-server.use('', routersManager);
+    this.server.use(cors({ origin: "*" }));
+    this.server.use(express.json());
+    this.server.use("", routerManager.router);
+    this.server.use(
+      "/.well-known",
+      express.static(path.join(__dirname, ".well-known"))
+    );
 
+    this.httpsServer.listen(process.env.HTTPS_PORT, () => {
+      console.log(`https server listening on ${process.env.HTTPS_PORT}`);
+    });
+  }
+}
 // server.listen(port, () => console.log('README parser is ready to migrate !\n          Listening at port : ' + port + "         "));
 
-httpServer.listen(process.env.HTTPS_PORT, () => {
-    console.log(`https server listening on ${process.env.HTTPS_PORT}`);
-});
+export default App;

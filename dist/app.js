@@ -4,17 +4,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const cors = require('cors'), server = (0, express_1.default)(), port = process.env.PORT || 8888, routersManager = require('./routes/routes-manager'), fs = require('fs'), https = require('https'), path = require('path'), httpsOptions = {
-    key: fs.readFileSync('./crt/server.key'),
-    cert: fs.readFileSync('./crt/server.cert')
+const https_1 = __importDefault(require("https"));
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const cors_1 = __importDefault(require("cors"));
+const port = process.env.PORT || 8888, httpsOptions = {
+    key: fs_1.default.readFileSync("./crt/server.key"),
+    cert: fs_1.default.readFileSync("./crt/server.cert"),
 };
 require("dotenv").config();
-const httpServer = https.createServer(httpsOptions, server);
-server.use("/.well-known", express_1.default.static(path.join(__dirname, '.well-known')));
-server.use(cors({ origin: '*' }));
-server.use(express_1.default.json());
-server.use('', routersManager);
+class App {
+    constructor(controller, port, routerManager) {
+        this.server = (0, express_1.default)();
+        this.port = port;
+        this.httpsServer = https_1.default.createServer(httpsOptions, this.server);
+        this.server.use((0, cors_1.default)({ origin: "*" }));
+        this.server.use(express_1.default.json());
+        this.server.use("", routerManager.router);
+        this.server.use("/.well-known", express_1.default.static(path_1.default.join(__dirname, ".well-known")));
+        this.httpsServer.listen(process.env.HTTPS_PORT, () => {
+            console.log(`https server listening on ${process.env.HTTPS_PORT}`);
+        });
+    }
+}
 // server.listen(port, () => console.log('README parser is ready to migrate !\n          Listening at port : ' + port + "         "));
-httpServer.listen(process.env.HTTPS_PORT, () => {
-    console.log(`https server listening on ${process.env.HTTPS_PORT}`);
-});
+exports.default = App;
