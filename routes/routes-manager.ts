@@ -30,6 +30,8 @@ class Router {
     });
   }
 }
+const filesModule = new FilesModule();
+const router = new Router(filesModule);
 
 // router.post("/parse", readmeAPI.parse);
 

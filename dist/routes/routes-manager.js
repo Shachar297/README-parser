@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+// import readmeAPI from '../src/readmeAPI';
+const files_1 = __importDefault(require("../src/files"));
 class Router {
     constructor(filesModule) {
         this.router = express_1.default.Router();
@@ -29,5 +31,7 @@ class Router {
         });
     }
 }
+const filesModule = new files_1.default();
+const router = new Router(filesModule);
 // router.post("/parse", readmeAPI.parse);
 exports.default = Router;
